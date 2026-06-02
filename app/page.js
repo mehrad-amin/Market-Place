@@ -3,10 +3,11 @@
 import { products, categories } from "@/lib/mockData";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
-import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react"; // ۱. ایمپورت کردن ساسپنس
 
-export default function HomePage() {
+// ۲. منطق صفحه رو به این کامپوننت منتقل کردیم
+function MarketplaceContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const selectedCategory = searchParams.get("category") || "all";
@@ -21,7 +22,7 @@ export default function HomePage() {
 
   const filteredProducts =
     selectedCategory === "all"
-      ? products.slice(0, 6) // فقط 6 محصول اول در صفحه اصلی
+      ? products.slice(0, 6)
       : products.filter((p) => p.category === selectedCategory).slice(0, 6);
 
   return (
@@ -74,7 +75,7 @@ export default function HomePage() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">محصولات ویژه</h2>
           <Link href="/products" className="text-blue-600 hover:underline">
-            مشاهده همه →
+            مشاهده همه ←
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -106,5 +107,20 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ۳. کامپوننت اصلی که نکس‌جی‌اس به عنوان صفحه "/" می‌شناسه
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-center py-20 text-gray-500">
+          در حال بارگذاری...
+        </div>
+      }
+    >
+      <MarketplaceContent />
+    </Suspense>
   );
 }
