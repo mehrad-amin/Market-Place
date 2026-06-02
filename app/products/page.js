@@ -1,37 +1,15 @@
 "use client";
+
 import ProductCard from "@/components/ProductCard";
 import { useFilters } from "@/hooks/useFilters";
 import { categories, products } from "@/lib/mockData";
-import { useMemo, useState } from "react";
+import { useMemo, useState, Suspense } from "react"; // ۱. ایمپورت کردن Suspense
 import { NumericFormat } from "react-number-format";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const { filters, updateFilters, resetFilters, hasActiveFilters } =
     useFilters();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  console.log(filters);
-  // const formatPrice = (price) => price.toLocaleString("fa-IR") + " تومان";
-  // const [selectedCategory, setSelectedCategory] = useState("all");
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [sortBy, setSortBy] = useState("default");
-  // let displayedProducts = getProductsByCategory(selectedCategory);
-  // if (searchTerm) {
-  //   displayedProducts = displayedProducts.filter(
-  //     (product) =>
-  //       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       product.seller.toLowerCase().includes(searchTerm.toLowerCase()),
-  //   );
-  // }
-  // let sortedProducts = [...displayedProducts];
-  // if (sortBy === "price_asc") {
-  //   sortedProducts.sort((a, b) => a.price - b.price);
-  // } else if (sortBy === "price_desc") {
-  //   sortedProducts.sort((a, b) => b.price - a.price);
-  // } else if (sortBy === "rating") {
-  //   sortedProducts.sort((a, b) => b.rating - a.rating);
-  // }
-
-  // displayedProducts = sortedProducts;
 
   const displayedProducts = useMemo(() => {
     let result = [...products];
@@ -133,7 +111,7 @@ export default function ProductsPage() {
 
       {/* بخش اصلی: دو ستونه (فیلتر + محصولات) */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* پنل فیلتر - دسکتاپ همیشه نمایش، موبایل با toggle */}
+        {/* پنل فیلتر */}
         <div
           className={`
           ${isFilterOpen ? "block" : "hidden"} 
@@ -188,7 +166,6 @@ export default function ProductsPage() {
                 placeholder="از"
                 value={filters.minPrice}
                 onValueChange={(values) => {
-                  // values.value مقدار عددی بدون کاما است
                   updateFilters({ minPrice: values.value });
                 }}
                 thousandSeparator=","
@@ -198,7 +175,6 @@ export default function ProductsPage() {
                 dir="ltr"
               />
 
-              {/* فیلد "تا" - حداکثر قیمت */}
               <NumericFormat
                 placeholder="تا"
                 value={filters.maxPrice}
@@ -253,7 +229,7 @@ export default function ProductsPage() {
               value={filters.search}
               onChange={(e) => updateFilters({ search: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
+            ></input>
           </div>
 
           {/* نمایش تعداد نتایج */}
@@ -268,7 +244,7 @@ export default function ProductsPage() {
             <div className="bg-white rounded-xl shadow-md p-12 text-center">
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                محصولی یافت نشد
+                محصولاتی یافت نشد
               </h3>
               <p className="text-gray-500">
                 لطفاً فیلترهای دیگری را امتحان کنید
@@ -290,5 +266,19 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-center py-20 text-gray-500">
+          در حال بارگذاری فیلترها و محصولات...
+        </div>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }
