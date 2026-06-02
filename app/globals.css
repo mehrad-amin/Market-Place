@@ -18,9 +18,16 @@
     --foreground: #ededed;
   }
 }
+@font-face {
+  font-family: "MyCustomFont";
+  src: url("/fonts/Dana/woff2/DanaFaNum-Medium.woff2") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* برای بهبود performance */
+}
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "MyCustomFont", Arial, Helvetica, sans-serif;
 }
